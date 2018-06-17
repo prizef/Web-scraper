@@ -1,4 +1,5 @@
-﻿using AngleSharp.Parser.Html;
+﻿using AngleSharp.Dom.Html;
+using AngleSharp.Parser.Html;
 using Newtonsoft.Json;
 using RedditScraper.Models;
 using System;
@@ -24,6 +25,10 @@ namespace RedditScraper.Services
 
                 var siteTable = document.QuerySelectorAll("#siteTable > .thing");
 
+                //var nextButton = document.QuerySelectorAll("#siteTable > .nav-buttons > .nextprev > .next-button > a").OfType<IHtmlAnchorElement>();
+
+                var nextButton2 = 1;
+
                 List<TopScoringReddit> results = new List<TopScoringReddit>();
 
                 foreach (var item in siteTable)
@@ -40,6 +45,34 @@ namespace RedditScraper.Services
                     topScoringReddit.Comments = first.TextContent;
 
                     results.Add(topScoringReddit);
+                }
+
+                while (nextButton2 < 5)
+                {
+                    html = client.GetStringAsync("https://www.reddit.com/r/all/top/?count=25").Result;
+
+                    parser = new HtmlParser();
+
+                    document = parser.Parse(html);
+
+                    siteTable = document.QuerySelectorAll("#siteTable > .thing");
+
+                    foreach (var item in siteTable)
+                    {
+                        var topScoringReddit = new TopScoringReddit();
+
+                        var mayBlank = item.QuerySelector(".entry > .top-matter > .title > .may-blank");
+                        topScoringReddit.Title = mayBlank.TextContent;
+
+                        var subReddit = item.QuerySelector(".entry > .top-matter > .tagline > .subreddit");
+                        topScoringReddit.SubReddit = subReddit.TextContent;
+
+                        var first = item.QuerySelector(".entry > .top-matter > .flat-list > .first");
+                        topScoringReddit.Comments = first.TextContent;
+
+                        results.Add(topScoringReddit);
+                    }
+                    nextButton2++;
                 }
                 return results;
             }
