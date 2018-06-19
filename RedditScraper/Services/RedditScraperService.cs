@@ -1,4 +1,5 @@
-﻿using AngleSharp.Parser.Html;
+﻿using AngleSharp.Dom.Html;
+using AngleSharp.Parser.Html;
 using Newtonsoft.Json;
 using RedditScraper.Models;
 using System;
