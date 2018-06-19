@@ -24,11 +24,8 @@ namespace RedditScraper.Services
                 using (var client = new HttpClient())
                 {
                     var html = client.GetStringAsync(url).Result;
-
                     var parser = new HtmlParser();
-
                     var document = parser.Parse(html);
-
                     var siteTable = document.QuerySelectorAll("#siteTable > .thing");
 
                     foreach (var item in siteTable)
@@ -46,7 +43,9 @@ namespace RedditScraper.Services
 
                         results.Add(topScoringReddit);
                     }
+
                     var aElem = document.QuerySelector("#siteTable > .nav-buttons > .nextprev > .next-button a");
+
                     if (aElem != null)
                     {
                         url = aElem.GetAttribute("href");
